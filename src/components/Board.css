@@ -1,0 +1,187 @@
+.board-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.board {
+    position: relative;
+    /* Chess board background */
+    background-image: url('../assets/board.png');
+    background-size: cover;
+    background-position: center;
+    /* Keep shadows but remove gradient */
+    border-radius: 4px;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        0 0 0 4px var(--theme-color, #4a3c2a),
+        0 0 0 8px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.3s ease;
+    /* Ensure pixel art look for board too */
+    image-rendering: pixelated;
+}
+
+.board.in-check {
+    box-shadow:
+        0 20px 60px rgba(239, 68, 68, 0.4),
+        0 0 0 4px #ef4444,
+        0 0 0 8px #dc2626;
+}
+
+/* Labels */
+.rank-labels,
+.file-labels {
+    position: absolute;
+    pointer-events: none;
+}
+
+.rank-labels {
+    left: 4px;
+    top: 0;
+    height: 100%;
+}
+
+.file-labels {
+    left: 0;
+    bottom: 2px;
+    width: 100%;
+}
+
+.label {
+    position: absolute;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.4);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+}
+
+.rank-labels .label {
+    left: 6px;
+}
+
+.file-labels .label {
+    bottom: 0px;
+    transform: translateX(-50%);
+}
+
+/* Cells */
+.cell {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    user-select: none;
+}
+
+/* Remove default backgrounds to show board image */
+.cell.light {
+    background: transparent;
+}
+
+.cell.dark {
+    background: transparent;
+}
+
+.cell.can-select:hover {
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.25) 0%, transparent 70%);
+}
+
+.cell.selected {
+    background: radial-gradient(circle at center, rgba(127, 166, 80, 0.9) 0%, rgba(127, 166, 80, 0) 70%) !important;
+    /* Spot ışığı efekti */
+    box-shadow: none;
+    /* Kenar çizgilerini kaldırarak "eğimli" veya "kaymış" hissini yok et */
+}
+
+.cell.valid-move {
+    cursor: pointer;
+}
+
+.cell.valid-move:hover {
+    background: radial-gradient(circle at center, rgba(127, 166, 80, 0.7) 0%, transparent 70%) !important;
+}
+
+/* Pieces (New Image Based) */
+.piece-img {
+    width: 100%;
+    /* Görseli biraz daha büyüt */
+    height: 120%;
+    object-fit: contain;
+    transition: transform 0.15s ease;
+    cursor: inherit;
+    /* Pixel art rendering */
+    image-rendering: pixelated;
+    filter: var(--piece-filter-black);
+    /* Daha yukarı kaldırarak alt çizgiden kurtar */
+    transform: translateY(-20%);
+    /* Taşların seçim efektinin üstünde kalmasını sağla ama çok abartma */
+    position: relative;
+    z-index: 2;
+}
+
+/* Enhance white pieces visibility */
+.piece-img.white {
+    filter: var(--piece-filter-white);
+}
+
+.cell.can-select .piece-img:hover {
+    /* Baz translateY(-20%) üzerine hover efekti ekliyoruz */
+    transform: scale(1.15) translateY(-25%);
+    filter: drop-shadow(0 8px 6px rgba(0, 0, 0, 0.5));
+    z-index: 10;
+}
+
+.cell.can-select .piece-img.white:hover {
+    filter: var(--piece-filter-white) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+}
+
+/* Move indicators */
+.move-indicator {
+    position: absolute;
+    width: 30%;
+    /* Biraz daha büyük */
+    height: 30%;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.4);
+    /* Daha koyu/belirgin */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    /* Hafif gölge */
+    pointer-events: none;
+    z-index: 1;
+    /* Taşın altında */
+}
+
+/* Valid move hover (boş kareye gelince) */
+.cell.valid-move:hover .move-indicator {
+    background: rgba(100, 150, 60, 0.6);
+    transform: scale(1.3);
+}
+
+.capture-indicator {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* Corner highlighting for capture - Daha belirgin çerçeve */
+    background: rgba(239, 68, 68, 0.15);
+    box-shadow: inset 0 0 0 4px rgba(239, 68, 68, 0.6);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Animation for piece movement */
+@keyframes pieceMove {
+    0% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.piece-img.just-moved {
+    animation: pieceMove 0.2s ease-out;
+}
